@@ -57,6 +57,41 @@ function expressionCalculator(expr) {
     }
 
     
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+function multipliDivision (arr = ['6', '*', '3', '*','(', '5', '*', '2', ')']) {
+    let AR = [];
+    for (i = 0; i < arr.length; i++) {              
+        if (arr[i] == '*' || arr[i] == '/' || arr[i] == '+' || arr[i] == '-' ) {
+            if (arr[i] == '*') {
+                AR[AR.length-1] = ( Number(AR[AR.length-1]) * Number(arr[i+1]) );
+                i++;
+            } else if (arr[i] == '/') {
+                AR[AR.length-1] = ( AR[AR.length-1] / arr[i+1] );
+                i++; 
+            } else if (arr[i] == '+' || arr[i] == '-') {            
+                AR.push(arr[i]);
+            }        
+        } else if (arr[i] == '(' ) {                  
+            let removed = arr.splice(i, arr.length-i);
+            removed.shift();
+            
+            arr = arr.concat(multipliDivision(removed));
+        }  else if (arr[i] == ')') {
+                                           
+                let removed = arr.splice(i, arr.length-i);
+                removed.pop();                    
+                return AR;
+        }   else {       
+            AR.push(arr[i]);
+            console.log(AR)
+        }  
+    }
+    return AR;
+}
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
 
 
 
