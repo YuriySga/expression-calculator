@@ -3,37 +3,57 @@ function eval() {
     return;
 }
 
-function expressionCalculator(expr) { 
+function expressionCalculator(expr) {
+    
     let str = expr.trim();
-    let arr = str.split(' ');
+    let arr = str.split('');
     let arr1 = [];
+    let arr2 = []; 
     arr.forEach(item => {if (item !== " " && item !== "") arr1.push(item);} );
-    let res = changeBrackets(arr1);
+     
+    for (let i=0; i < arr1.length; i++) {
+        if (isNaN(Number(arr1[i])) === false) {  
+            if (isNaN(Number(arr2[arr2.length-1])) === false) {
+                arr2[arr2.length-1] = arr2[arr2.length-1] + arr1[i];                 
+            } else {
+                arr2.push(arr1[i]);
+            }                  
+        } else {
+            arr2.push(arr1[i]);
+        }     
+    }
+   
+    
+    
+    let res = changeBrackets(arr2);
     
     let result = multipliDivision(res)[0];
     if (result == Infinity) {
         throw Error("TypeError: Division by zero.");        
     }
-    if (isNaN(result) === true) {
+    /* if (isNaN(result) === true) {
         throw Error("ExpressionError: Brackets must be paired");        
-    }
+    } */
     
     return Number(result.toFixed(4));
 }
 
 function changeBrackets (arr) {
-    let a = (arr.indexOf('(', 0));
-    let b = (arr.indexOf(')', a));
+    let b = arr.indexOf(')', 0);
+    let a = arr.lastIndexOf('(', b);
     if (a == -1 && b == -1) {
         return arr;
-        } 
-    else {
+    } else if (a == -1 || b == -1) {
+        throw Error("ExpressionError: Brackets must be paired");      
+    } else {
         let removed = arr.splice(a, b-a+1);
         removed.shift();
         removed.pop();
         arr.splice(a, 0, removed);
-        return (arr.indexOf('(', 0) == -1) ? arr : changeBrackets(arr);
+        let test = changeBrackets(arr);
+        return (arr.length == test.length) ? arr :  test ;
     }
+    
 }
 
 function multipliDivision (arr, st = "*/") {
@@ -48,6 +68,7 @@ function multipliDivision (arr, st = "*/") {
                         AR[AR.length-1] =  Number(AR[AR.length-1]) * Number(arr[i+1]);
                         i++;
                     } else if (arr[i] == '/') {
+                        if (Number(arr[i+1]) === 0) throw Error("TypeError: Division by zero.");
                         AR[AR.length-1] = ( AR[AR.length-1] / arr[i+1] );
                         i++;
                     } else if (arr[i] == '+' || arr[i] == '-') {
@@ -70,6 +91,7 @@ function multipliDivision (arr, st = "*/") {
                         }
                     } else if (arr[i] == '/') {                    
                         if (temp.length == 1) { 
+                            if (Number(temp) === 0) throw Error("TypeError: Division by zero.");
                             AR[AR.length-1] =  Number(AR[AR.length-1]) / Number(temp) ;
                             i++;
                             temp = null;
@@ -107,7 +129,7 @@ function multipliDivision (arr, st = "*/") {
                         AR[AR.length-1] =  Number(AR[AR.length-1]) + Number(arr[i+1]);
                         i++;
                     } else if (arr[i] == '-') {
-                        AR[AR.length-1] = ( AR[AR.length-1] - arr[i+1] );
+                        AR[AR.length-1] = Number(AR[AR.length-1]) - Number(arr[i+1]);
                         i++;
                     }
                 } else if (Array.isArray(arr[i+1]) == true) {/////
